@@ -1,17 +1,35 @@
-name: Simple CI Test
+name: CI - Test ML Pipeline
 
 on:
   push:
     branches:
       - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
 
 jobs:
-  test:
+  test-ml-pipeline:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Print success message
-        run: echo "Working!"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Train model
+        run: python src/train.py
+
+      - name: Run tests
+        run: pytest
